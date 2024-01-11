@@ -30,22 +30,23 @@
             </ul>
     </nav>
         <h2 class="ml-5">Sign Up</h2>
-        <form>
+        <form action="{% url 'djangoapp:registration' %}" method="post">
+            {% csrf_token %}
             <div class="form-group mr-5 ml-5">
               <label for="username">Username</label>
-              <input type="text" class="form-control" id="username" placeholder="Enter User Name:">
+              <input type="text" class="form-control" name="username" placeholder="Enter User Name:" required>
             </div>
             <div class="form-group mr-5 ml-5">
                 <label for="first_name">First Name</label>
-                <input type="text" class="form-control" id="first_name" placeholder="Enter First Name:">
+                <input type="text" class="form-control" name="first_name" placeholder="Enter First Name:" required>
               </div>
               <div class="form-group mr-5 ml-5">
                 <label for="last_name">Last Name</label>
-                <input type="text" class="form-control" id="last_name" placeholder="Enter Last Name:">
+                <input type="text" class="form-control" name="last_name" placeholder="Enter Last Name:" required>
               </div>
             <div class="form-group mr-5 ml-5">
               <label for="password">Password</label>
-              <input type="password" class="form-control" id="password" placeholder="Enter Password:">
+              <input type="password" class="form-control" name="psw" placeholder="Enter Password:" required>
             </div>
             <button type="submit" class="btn btn-primary ml-5">Sign Up</button>
           </form>
