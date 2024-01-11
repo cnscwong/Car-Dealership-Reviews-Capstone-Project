@@ -34,12 +34,12 @@ def login_request(request):
         print(user)
         if user is not None:
             login(request, user)
-            return redirect('onlinecourse:popular_course_list')
+            return redirect('djangoapp:popular_course_list')
         else:
             context['message'] = "Invalid username or password."
-            return render(request, 'onlinecourse/user_login.html', context)
+            return render(request, 'djangoapp/user_login.html', context)
     else:
-        return render(request, 'onlinecourse/user_login.html', context)
+        return render(request, 'djangoapp/user_login.html', context)
 
 def logout_request(request):
     pass
