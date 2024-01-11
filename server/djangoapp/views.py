@@ -25,17 +25,28 @@ def contact(request):
     if request.method == "GET":
         return render(request, 'djangoapp/contact.html')
 
-# Create a `login_request` view to handle sign in request
-# def login_request(request):
-# ...
+def login_request(request):
+    context = {}
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['psw']
+        user = authenticate(username=username, password=password)
+        print(user)
+        if user is not None:
+            login(request, user)
+            return redirect('onlinecourse:popular_course_list')
+        else:
+            context['message'] = "Invalid username or password."
+            return render(request, 'onlinecourse/user_login.html', context)
+    else:
+        return render(request, 'onlinecourse/user_login.html', context)
 
-# Create a `logout_request` view to handle sign out request
-# def logout_request(request):
-# ...
+def logout_request(request):
+    pass
 
-# Create a `registration_request` view to handle sign up request
-# def registration_request(request):
-# ...
+def registration_request(request):
+    if request.method == "GET":
+        return render(request, 'djangoapp/registration.html')
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
