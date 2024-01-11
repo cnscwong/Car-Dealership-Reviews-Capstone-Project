@@ -45,8 +45,34 @@
                 {% endif %}
             </ul>
     </nav>
-    {{ dealer_names }}
-    <!--Add a dealer table here -->
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Dealer Name</th>
+            <th scope="col">City</th>
+            <th scope="col">Address</th>
+            <th scope="col">Zip</th>
+            <th scope="col">State</th>            
+          </tr>
+        </thead>
+        <tbody>
+            {% if dealers %}
+            {% for dealer in dealers %}
+            <tr>
+            <th scope="row">{{dealer.id}}</th>
+            <td>{{dealer.short_name}}</td>
+            <td>{{dealer.city}}</td>
+            <td>{{dealer.address}}</td>
+            <td>{{dealer.zip}}</td>
+            <td>{{dealer.st}}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+                No dealers found
+            {% endif %}
+        </tbody>
+      </table>
 
     </body>
 
