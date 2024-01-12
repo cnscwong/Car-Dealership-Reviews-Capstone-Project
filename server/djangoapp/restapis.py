@@ -1,6 +1,6 @@
 import requests
 import json
-from .models import CarDealer
+from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
 
 def get_request(url, **kwargs):
@@ -45,16 +45,9 @@ def get_dealers_from_cf(url, **kwargs):
 
 def get_dealers_by_state(url, state):
     results = []
-    # Call get_request with a URL parameter
     json_result = get_request(url, state=state)
     if json_result:
-        # Get the row list in JSON as dealers
-        dealers = json_result
-        # For each dealer object
-        for dealer in dealers:
-            # Get its content in `doc` object
-            dealer_doc = dealer
-            # Create a CarDealer object with values in `doc` object
+        for dealer_doc in json_result:
             dealer_obj = CarDealer(address=dealer_doc["address"], city=dealer_doc["city"], full_name=dealer_doc["full_name"],
                                    id=dealer_doc["id"], lat=dealer_doc["lat"], long=dealer_doc["long"],
                                    short_name=dealer_doc["short_name"],
@@ -63,17 +56,18 @@ def get_dealers_by_state(url, state):
 
     return results
 
+def analyze_review_sentiments(text):
+    return True
 
-# Create a get_dealer_reviews_from_cf method to get reviews by dealer id from a cloud function
-# def get_dealer_by_id_from_cf(url, dealerId):
-# - Call get_request() with specified arguments
-# - Parse JSON results into a DealerView object list
-
-
-# Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
-# def analyze_review_sentiments(text):
-# - Call get_request() with specified arguments
-# - Get the returned sentiment label such as Positive or Negative
+def get_dealer_reviews_from_cf(url):
+    results = []
+    json_result = get_request(url)
+    if json_result:
+        for review_doc in json_result:
+            review_obj = DealerReview(review_doc["dealership"], review_doc["name"], review_doc["purchase"], review_doc["review"], review_doc["purchase_date"], review_doc["car_make"], review_doc["car_model"], review_doc["car_year"], analyze_review_sentiments(review_doc["review"]), review_doc["id"])
+            results.append(review_obj)
+    
+    return results
 
 
 
