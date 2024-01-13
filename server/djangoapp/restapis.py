@@ -2,6 +2,9 @@ import requests
 import json
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson.natural_language_understanding_v1 import Features, SentimentOptions
 
 def get_request(url, **kwargs):
     print(kwargs)
@@ -57,7 +60,16 @@ def get_dealers_by_state(url, state):
     return results
 
 def analyze_review_sentiments(text):
-    return True
+    url = "https://api.us-east.natural-language-understanding.watson.cloud.ibm.com/instances/8188328a-514e-4226-9c4e-6199257c09e9"
+    api_key = "edxdwyRyYLJ2pTmffSUzDmuNMtHf87Lcvk13UxJhUc26"
+    authenticator = IAMAuthenticator(api_key)
+    natural_language_understanding = NaturalLanguageUnderstandingV1(version='2021-08-01',authenticator=authenticator)
+    natural_language_understanding.set_service_url(url)
+    response = natural_language_understanding.analyze( text=text,features=Features(sentiment=SentimentOptions(targets=[text]))).get_result()
+    label=json.dumps(response, indent=2)
+    label = response['sentiment']['document']['label']
+
+    return label
 
 def get_dealer_reviews_from_cf(url):
     results = []

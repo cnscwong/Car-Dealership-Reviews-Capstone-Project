@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealers_by_state
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -77,13 +77,20 @@ def get_dealerships(request):
         context["dealers"] = dealerships
         return render(request, 'djangoapp/index.html', context)
 
+def get_dealerships_by_state(request, state):
+    context = {}
+    if request.method == "GET":
+        url = "https://cncw18-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        dealerships = get_dealers_by_state(url, state)
+        context["dealers"] = dealerships
+        return render(request, 'djangoapp/index.html', context)
 
 def get_dealer_details(request, dealer_id):
     context = {}
     if request.method == "GET":
         url = f"https://cncw18-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews?id={dealer_id}"
         reviews = get_dealer_reviews_from_cf(url)
-        text = ' '.join([review.review for review in reviews])
+        text = ' '.join([f"{review.review}: {review.sentiment}" for review in reviews])
         return HttpResponse(text)
 
 # Create a `add_review` view to submit a review
