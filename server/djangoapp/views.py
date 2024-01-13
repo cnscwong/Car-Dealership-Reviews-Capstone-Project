@@ -90,28 +90,34 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         url = f"https://cncw18-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews?id={dealer_id}"
         reviews = get_dealer_reviews_from_cf(url)
-        text = ' '.join([f"{review.review}: {review.sentiment}" for review in reviews])
-        return HttpResponse(text)
+        context["dealer_id"] = dealer_id
+        context["reviews"] = reviews
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 def add_review(request, dealer_id):
     if request.user.is_authenticated:
-        url = "https://cncw18-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
-        review = {
-            "id": 1114,
-            "name": "Upkar Lidder",
-            "dealership": dealer_id,
-            "review": "Great service!",
-            "purchase": False,
-            "another": "field",
-            "purchase_date": "02/16/2021",
-            "car_make": "Audi",
-            "car_model": "Car",
-            "car_year": 2021
-        }
-        json_payload = {}
-        json_payload["review"] = review 
-        res = post_request(url, json_payload, dealerId=dealer_id)
-        return HttpResponse(res["message"])
+        if request.method == "GET":
+            context = {}
+            context["dealer_id"] = dealer_id
+            return render(request, 'djangoapp/add_review.html', context)
+        elif request.method == "POST":
+            url = "https://cncw18-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
+            review = {
+                "id": 1114,
+                "name": "Upkar Lidder",
+                "dealership": dealer_id,
+                "review": "Great service!",
+                "purchase": False,
+                "another": "field",
+                "purchase_date": "02/16/2021",
+                "car_make": "Audi",
+                "car_model": "Car",
+                "car_year": 2021
+            }
+            json_payload = {}
+            json_payload["review"] = review 
+            res = post_request(url, json_payload, dealerId=dealer_id)
+            return HttpResponse(res["message"])
     else:
         context = {}
         context['message'] = "You must be logged in to post a review"
