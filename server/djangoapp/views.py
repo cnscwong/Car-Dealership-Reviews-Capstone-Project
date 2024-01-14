@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
+from .models import CarModel
 from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealers_by_state, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -68,7 +68,6 @@ def registration_request(request):
             context['message'] = "User already exists."
             return render(request, 'djangoapp/user_registration.html', context)
 
-# Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     context = {}
     if request.method == "GET":
@@ -99,25 +98,31 @@ def add_review(request, dealer_id):
         if request.method == "GET":
             context = {}
             context["dealer_id"] = dealer_id
+            cars = CarModel.objects.all()
+            print(cars)
+            context["cars"] = cars
             return render(request, 'djangoapp/add_review.html', context)
         elif request.method == "POST":
+            print(request.POST["car"])
+            print(request.user)
+            car = request.POST["car"].split("-")
             url = "https://cncw18-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
             review = {
-                "id": 1114,
-                "name": "Upkar Lidder",
+                "id": 1000,
+                "name": request.user.username,
                 "dealership": dealer_id,
-                "review": "Great service!",
-                "purchase": False,
+                "review": request.POST["content"],
+                "purchase": request.POST["purchasecheck"] == 'on',
                 "another": "field",
-                "purchase_date": "02/16/2021",
-                "car_make": "Audi",
-                "car_model": "Car",
-                "car_year": 2021
+                "purchase_date": request.POST["purchasedate"],
+                "car_make": car[1],
+                "car_model": car[0],
+                "car_year": car[2]
             }
             json_payload = {}
             json_payload["review"] = review 
             res = post_request(url, json_payload, dealerId=dealer_id)
-            return HttpResponse(res["message"])
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
     else:
         context = {}
         context['message'] = "You must be logged in to post a review"
